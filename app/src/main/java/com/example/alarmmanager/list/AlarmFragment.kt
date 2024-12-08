@@ -31,9 +31,8 @@ class AlarmFragment : Fragment() {
         val recyclerView: RecyclerView = view.findViewById(R.id.recycle_view)
 
         val alarmList = alarmPreferencesManager.getAlarms().toMutableList()
-        val adapter = AlarmAdapter(alarmList) { alarm, isChecked ->
-            alarm.isEnable = isChecked
-            Toast.makeText(requireContext(), "Будильник '${alarm.name}' ${if (isChecked) "включен" else "выключен"}", Toast.LENGTH_SHORT).show()
+        val adapter = AlarmAdapter(alarmList) { alarm ->
+            alarmPreferencesManager.saveAlarm(alarm)
         }
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())

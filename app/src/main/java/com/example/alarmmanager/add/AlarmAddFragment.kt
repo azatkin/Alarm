@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -26,13 +27,15 @@ class AlarmAddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val nameAlarm = view.findViewById<EditText>(R.id.nameAlarm)
+
         val setAlarmButton = view.findViewById<Button>(R.id.setAlarmButton)
         setAlarmButton.setOnClickListener {
             val timePicker = view.findViewById<TimePicker>(R.id.timePicker)
             val hour = timePicker.hour
             val minute = timePicker.minute
 
-            val alarmData = AlarmData("Будильник", "$hour:$minute", false)
+            val alarmData = AlarmData(nameAlarm.text.toString(), hour, minute, true)
             AlarmPreferencesManager(requireContext()).saveAlarm(alarmData)
 
             Toast.makeText(context, "Будильник созднай на: $hour:$minute", Toast.LENGTH_SHORT).show()

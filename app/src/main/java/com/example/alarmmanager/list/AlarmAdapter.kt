@@ -12,7 +12,7 @@ import com.example.alarmmanager.R
 
 class AlarmAdapter(
     private val alarmList: List<AlarmData>,
-    private val onSwitchToggled:(AlarmData, Boolean) -> Unit
+    private val onSwitchToggled:(AlarmData) -> Unit
 ) : RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>() {
 
     inner class AlarmViewHolder(view: View) : RecyclerView.ViewHolder(view){
@@ -21,12 +21,10 @@ class AlarmAdapter(
         val switchTime: SwitchCompat = view.findViewById(R.id.switchTime)
 
         fun bind(alarmData: AlarmData){
-            time.text = alarmData.time
+            time.text = alarmData.title
             nameTime.text = alarmData.name
             switchTime.isChecked = alarmData.isEnable
         }
-
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlarmViewHolder {
@@ -41,7 +39,7 @@ class AlarmAdapter(
         holder.switchTime.setOnCheckedChangeListener(null)
 
         holder.switchTime.setOnCheckedChangeListener{_, isChecked ->
-            onSwitchToggled(alarmData, isChecked)
+            onSwitchToggled(alarmData.copy(isEnable = isChecked))
         }
     }
 
