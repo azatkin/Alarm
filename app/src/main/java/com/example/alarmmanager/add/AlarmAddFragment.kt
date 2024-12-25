@@ -9,17 +9,12 @@ import android.widget.EditText
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.example.alarmmanager.R
 import com.example.alarmmanager.entity.AlarmData
 import com.example.alarmmanager.list.AlarmFragment
 import com.example.alarmmanager.prefs.AlarmPreferencesManager
-import com.example.alarmmanager.viewmodel.AlarmViewModel
-import com.example.alarmmanager.viewmodel.ViewModelFactory
 
 class AlarmAddFragment : Fragment() {
-
-    private lateinit var viewModel: AlarmViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,19 +27,16 @@ class AlarmAddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val alarmPreferencesManager = AlarmPreferencesManager(requireContext())
-        viewModel = ViewModelProvider(requireActivity(), ViewModelFactory(alarmPreferencesManager))[AlarmViewModel::class.java]
-
         val nameAlarm = view.findViewById<EditText>(R.id.nameAlarm)
-        val setAlarmButton = view.findViewById<Button>(R.id.setAlarmButton)
 
+        val setAlarmButton = view.findViewById<Button>(R.id.setAlarmButton)
         setAlarmButton.setOnClickListener {
             val timePicker = view.findViewById<TimePicker>(R.id.timePicker)
             val hour = timePicker.hour
             val minute = timePicker.minute
 
             val alarmData = AlarmData(nameAlarm.text.toString(), hour, minute, true)
-            viewModel.saveAlarm(alarmData)
+            AlarmPreferencesManager(requireContext()).saveAlarm(alarmData)
 
             Toast.makeText(context, "Будильник созднай на: $hour:$minute", Toast.LENGTH_SHORT).show()
 

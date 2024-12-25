@@ -9,9 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.alarmmanager.entity.AlarmData
 import com.example.alarmmanager.R
 
-
 class AlarmAdapter(
-    private var alarmList: List<AlarmData>,
+    private val alarmList: List<AlarmData>,
     private val onSwitchToggled:(AlarmData) -> Unit
 ) : RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>() {
 
@@ -35,17 +34,14 @@ class AlarmAdapter(
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
         val alarmData = alarmList[position]
         holder.bind(alarmData)
+
         holder.switchTime.setOnCheckedChangeListener(null)
+
         holder.switchTime.setOnCheckedChangeListener{_, isChecked ->
             onSwitchToggled(alarmData.copy(isEnable = isChecked))
         }
     }
 
     override fun getItemCount(): Int = alarmList.size
-
-    fun updateData(newList: List<AlarmData>){
-        alarmList = newList
-        notifyDataSetChanged()
-    }
 
 }
