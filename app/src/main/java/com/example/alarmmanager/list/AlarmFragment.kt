@@ -7,14 +7,20 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.alarmmanager.R
 import com.example.alarmmanager.add.AlarmAddFragment
 import com.example.alarmmanager.prefs.AlarmPreferencesManager
+import com.example.alarmmanager.viewmodel.AlarmViewModel
+import com.example.alarmmanager.viewmodel.ViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class AlarmFragment : Fragment() {
+
+    private lateinit var viewModel: AlarmViewModel
+    private lateinit var adapter: AlarmAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,15 +34,19 @@ class AlarmFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val alarmPreferencesManager = AlarmPreferencesManager(requireContext())
-        val recyclerView: RecyclerView = view.findViewById(R.id.recycle_view)
+        viewModel = ViewModelProvider(this, ViewModelFactory(alarmPreferencesManager))[AlarmViewModel::class.java]
 
-        val alarmList = alarmPreferencesManager.getAlarms().toMutableList()
-        val adapter = AlarmAdapter(alarmList) { alarm ->
-            alarmPreferencesManager.saveAlarm(alarm)
+        adapter = AlarmAdapter(emptyList()) {alarm ->
+            viewModel.toggleAlarm(alarm, alarm.isEnable)
         }
 
+        val recyclerView: RecyclerView = view.findViewById(R.id.recycle_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
+
+        viewModel.alarms.observe(viewLifecycleOwner) {alarms ->
+            adapter.updateData(alarms)
+        }
 
         val button: FloatingActionButton = view.findViewById(R.id.fab)
         button.setOnClickListener{
@@ -50,8 +60,7 @@ class AlarmFragment : Fragment() {
 
         val deleteAllFab = view.findViewById<Button>(R.id.deleteAllFab)
         deleteAllFab.setOnClickListener {
-            alarmPreferencesManager.deleteAlarms()
-            alarmList.clear()
+            viewModel.deleteAllAlarms()
             adapter.notifyDataSetChanged()
             Toast.makeText(requireContext(), "Все будильники удалены", Toast.LENGTH_SHORT).show()
         }
